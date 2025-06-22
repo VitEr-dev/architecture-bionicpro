@@ -22,8 +22,25 @@ const ReportPage: React.FC = () => {
         },
         credentials: 'include'
       });
-
       
+      if (!response.ok) {
+        if (response.status === 403) {
+          throw new Error('Access denied. You do not have permission to download reports.');
+        }
+        throw new Error(`Error: ${response.statusText}`);
+      }
+  
+      // Обработка успешного скачивания файла
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'report.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+        
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {

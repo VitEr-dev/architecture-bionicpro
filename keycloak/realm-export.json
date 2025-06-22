@@ -132,11 +132,28 @@
         "enabled": true,
         "clientAuthenticatorType": "client-secret",
         "secret": "oNwoLQdvJAvRcL89SydqCWCe5ry1jMgq",
-        "bearerOnly": false,
+        "bearerOnly": true,
         "publicClient": false,
         "standardFlowEnabled": true,
         "directAccessGrantsEnabled": true,
-        "serviceAccountsEnabled": true
+        "serviceAccountsEnabled": true,
+        "protocolMappers": [
+        {
+          "name": "realm roles mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "realm_access.roles",
+            "jsonType.label": "String",
+            "access.tokenResponse.claim": "false"
+          }
+        }
+      ]
       }
     ]
   }
