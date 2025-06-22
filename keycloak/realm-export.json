@@ -121,16 +121,22 @@
         "implicitFlowEnabled": false,
         "attributes": {
           "pkce.code.challenge.method": "S256",
-          "exclude.session.state.from.auth.response": "true"
-        }
-        
+          "exclude.session.state.from.auth.response": "true",
+          "post.logout.redirect.uris": "+",
+          "backchannel.logout.revoke.offline.tokens": "false",
+          "backchannel.logout.session.required": "false"
+        } 
       },
       {
         "clientId": "reports-api",
         "enabled": true,
         "clientAuthenticatorType": "client-secret",
-        "secret": "oNwoLQdvJAvRcL89SydqCWCe5ry1jMgq", 
-        "bearerOnly": true
+        "secret": "oNwoLQdvJAvRcL89SydqCWCe5ry1jMgq",
+        "bearerOnly": false,
+        "publicClient": false,
+        "standardFlowEnabled": true,
+        "directAccessGrantsEnabled": true,
+        "serviceAccountsEnabled": true
       }
     ]
   }
