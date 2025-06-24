@@ -16,11 +16,13 @@ const ReportPage: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/reports`, {
+      const timestamp = new Date().getTime();
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/reports?t=${timestamp}`, {
         headers: {
           'Authorization': `Bearer ${keycloak.token}`
         },
-        credentials: 'include'
+        credentials: 'include',
+        cache: 'no-store'
       });
       
       if (!response.ok) {

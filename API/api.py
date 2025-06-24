@@ -123,7 +123,12 @@ async def download_report(token_data: TokenData = Depends(validate_token)):
         file_path,
         media_type="text/csv",
         filename="report.csv",
-        headers={"Content-Disposition": "attachment; filename=report.csv"}
+        headers={
+            "Content-Disposition": "attachment; filename=report.csv",
+            "Cache-Control": "no-store, no-cache, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0"
+        }
     )
 
 @app.get("/health")

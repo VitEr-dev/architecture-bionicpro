@@ -1,0 +1,1 @@
+Старт приложения: docker-compose up -d
