@@ -1,9 +1,20 @@
+# Основные зависимости
 fastapi==0.95.2
 uvicorn==0.22.0
-cryptography==41.0.7
+
+# Аутентификация и JWT
 python-jose[cryptography]==3.3.0
-pyjwt==2.8.0
-httpx==0.25.0
-pydantic==1.10.7
-python-multipart==0.0.6
+pyjwt==2.8.0  
 passlib==1.7.4
+
+# HTTP клиент
+httpx==0.25.0
+
+# Валидация данных
+pydantic==1.10.7
+
+# Формы данных
+python-multipart==0.0.6
+
+# Dev-инструменты
+python-dotenv==1.0.0

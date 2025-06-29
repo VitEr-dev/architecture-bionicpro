@@ -137,20 +137,36 @@
         "standardFlowEnabled": true,
         "directAccessGrantsEnabled": true,
         "serviceAccountsEnabled": true,
+        "fullScopeAllowed": true,
+        "attributes": {
+          "saml.assertion.signature": "false",
+          "oauth2.device.authorization.grant.enabled": "false",
+          "exclude.session.state.from.auth.response": "true"
+        },
         "protocolMappers": [
-         {
-           "name": "realm roles mapper",
-           "protocol": "openid-connect",
-           "protocolMapper": "oidc-usermodel-realm-role-mapper",
-           "consentRequired": false,
-           "config": {
-             "multivalued": "true",
-             "userinfo.token.claim": "true",
-             "id.token.claim": "true",
-             "access.token.claim": "true",
-             "claim.name": "realm_access.roles",
-             "jsonType.label": "String",
-             "access.tokenResponse.claim": "false"
+          {
+            "name": "realm roles mapper",
+            "protocol": "openid-connect",
+            "protocolMapper": "oidc-usermodel-realm-role-mapper",
+            "consentRequired": false,
+            "config": {
+              "multivalued": "true",
+              "userinfo.token.claim": "true",
+              "id.token.claim": "true",
+              "access.token.claim": "true",
+              "claim.name": "realm_access.roles",
+              "jsonType.label": "String"
+            }
+          },
+          {
+            "name": "audience mapper",
+            "protocol": "openid-connect",
+            "protocolMapper": "oidc-audience-mapper",
+            "consentRequired": false,
+            "config": {
+              "included.client.audience": "reports-api",
+              "id.token.claim": "true",
+              "access.token.claim": "true"
             }
           }
         ]

@@ -53,27 +53,23 @@ async def get_public_key():
             )
             response.raise_for_status()
             jwks = response.json()
-            key_data = next(k for k in jwks['keys'] if k.get('kty') == 'RSA')
-            return RSAAlgorithm.from_jwk(json.dumps(key_data))
+            # Исправлено: правильное извлечение ключа
+            key_data = next(k for k in jwks['keys'] if k['use'] == 'sig' and k['kty'] == 'RSA')
+            public_key = RSAAlgorithm.from_jwk(json.dumps(key_data))
+            # Добавьте логирование для отладки
+            logger.info(f"Public key loaded successfully. Key ID: {key_data.get('kid')}")
+            return public_key
         except Exception as e:
-            logger.error(f"Failed to get public key: {str(e)}")
-            raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail="Unable to verify credentials"
-            )
+            logger.error(f"Failed to get public key: {str(e)}. JWKS: {jwks if 'jwks' in locals() else 'not available'}")
+            raise
 
 async def validate_token(token: str = Depends(oauth2_scheme)):
-    logger.info(f"Validating token: {token[:20]}...")
-    
     try:
-        # Получаем kid из заголовка токена
         unverified_header = jwt.get_unverified_header(token)
         kid = unverified_header.get("kid")
         
-        # Получаем соответствующий ключ
         public_key = await get_public_key()
         
-        # Декодируем токен
         payload = jwt.decode(
             token,
             public_key,
@@ -81,8 +77,8 @@ async def validate_token(token: str = Depends(oauth2_scheme)):
             audience=CLIENT_ID,
             options={"verify_aud": True},
         )
+
         
-        # Извлекаем роли
         realm_roles = payload.get("realm_access", {}).get("roles", [])
         
         return TokenData(
@@ -94,16 +90,15 @@ async def validate_token(token: str = Depends(oauth2_scheme)):
     except ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
     except JWTError as e:
+        logger.error(f"JWT validation error: {str(e)}")
         raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
-    except Exception as e:
-        raise HTTPException(status_code=401, detail=f"Authentication failed: {str(e)}")
-
+    
 @app.get("/reports")
 async def download_report(token_data: TokenData = Depends(validate_token)):
     # Улучшенная проверка роли с детальным логированием
     logger.info(f"User {token_data.preferred_username} trying to access report. Roles: {token_data.realm_roles}")
     
-    if not any(role == "prothetic_user" for role in token_data.realm_roles):
+    if "prothetic_user" not in token_data.realm_roles:
         logger.warning(f"ACCESS DENIED for {token_data.preferred_username}. Roles: {token_data.realm_roles}")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
